@@ -1,5 +1,4 @@
-FROM alpine:3.8
-LABEL maintainer="Marc Mettke <marc@itmettke.de>"
+FROM alpine:3s
 
 ENV SYSTEM https://github.com/operasoftware/ssh-key-authority.git
 ADD entrypoint.sh /entrypoint.sh
