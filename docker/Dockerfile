@@ -1,38 +1,76 @@
-FROM alpine:3s
+FROM php:7.2-apache
 
-ENV SYSTEM https://github.com/operasoftware/ssh-key-authority.git
+# Systemvariablen setzen
+ENV SYSTEM=https://github.com/operasoftware/ssh-key-authority.git
+
 ADD entrypoint.sh /entrypoint.sh
-ADD healthcheck.sh /healthcheck.sh
-ADD cron /var/spool/cron/crontabs/root
+RUN chmod +x /entrypoint.sh
 
+ADD cron /etc/cron.d/ldap-sync
+RUN chmod 0644 /etc/cron.d/ldap-sync
+
+RUN ln -s /usr/local/bin/php /usr/bin/php
+
+# Erforderliche Pakete installieren
+RUN apt-get update && \
+    apt-get install -y \
+        git \
+        cron \
+        default-libmysqlclient-dev \
+        libldap2-dev \
+        libssh2-1-dev \
+        libmcrypt-dev && \
+        docker-php-ext-install \
+        ldap \
+        mysqli \
+        mbstring \
+        pcntl
+        
+RUN pecl install ssh2-1.1.2 && \
+        docker-php-ext-enable ssh2
+
+# Verzeichnisse erstellen und Berechtigungen setzen
 RUN mkdir -p /var/log/keys/ /run/php/ /ska/ && \
-    adduser --system --disabled-password keys-sync && \
-    apk add openssh \ 
-            php \
-            php-fpm \
-            php7-json \
-            php7-ldap \
-            php7-mbstring \
-            php7-mysqli \
-            php7-pcntl \
-            php7-posix \
-            php7-ssh2 \
-            rsync \
-            ssmtp \
-            sudo && \
-    sed -i -e '/listen =/ s/= .*/= 0.0.0.0:9000/' /etc/php7/php-fpm.d/www.conf && \
-    sed -i -e '/;pid =/ s/.*/pid = \/var\/run\/php-fpm.pid/' /etc/php7/php-fpm.conf && \
-    echo "" >> /etc/php7/php-fpm.conf && \
-    chmod +x /entrypoint.sh /healthcheck.sh && \
-    ln -sf /dev/stderr /var/log/php7/error.log
-RUN apk add git && \
-    git clone ${SYSTEM} /ska && \
-    apk del git && \
+    chown -R www-data:www-data /var/log/keys/ /run/php/ /ska/
+
+# Benutzer für die Synchronisation hinzufügen
+RUN adduser --system --disabled-password keys-sync
+
+# Repository klonen und Berechtigungen setzen
+RUN git clone ${SYSTEM} /ska && \
     chown -R keys-sync:nogroup /ska/config
 
-EXPOSE 9000
-VOLUME /ska/config
-VOLUME /public_html
+RUN a2enmod authnz_ldap
+RUN a2enmod session
+RUN a2enmod session_cookie
+RUN a2enmod session_crypto
+RUN a2enmod auth_form
+RUN a2enmod request
 
-ENTRYPOINT "/entrypoint.sh"
-HEALTHCHECK CMD /healcheck.sh
+# Apache konfigurieren
+COPY ldap-docker.conf /etc/apache2/conf-enabled/ldap-docker.conf
+
+RUN cat <<EOF > /etc/apache2/sites-available/000-default.conf
+<VirtualHost *:80>
+    DocumentRoot /ska/public_html
+    DirectoryIndex init.php
+    FallbackResource /init.php
+
+    <Directory /ska/public_html>
+        AuthType Basic
+        AuthName "SSH Key Authority"
+        AuthBasicProvider docker
+
+        AuthUserFile /dev/null
+        Require valid-user
+    </Directory>
+</VirtualHost>
+EOF
+
+WORKDIR /ska/public_html
+
+# Exponieren des Apache-Ports
+EXPOSE 80
+
+# Startbefehl für den Container
+CMD ["/entrypoint.sh"]
