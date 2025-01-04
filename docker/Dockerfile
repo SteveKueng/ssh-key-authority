@@ -6,9 +6,6 @@ ENV SYSTEM=https://github.com/operasoftware/ssh-key-authority.git
 ADD entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-ADD cron /tmo/cron
-RUN crontab /tmp/cron
-
 RUN ln -s /usr/local/bin/php /usr/bin/php
 
 # Erforderliche Pakete installieren
@@ -66,6 +63,9 @@ RUN cat <<EOF > /etc/apache2/sites-available/000-default.conf
     </Directory>
 </VirtualHost>
 EOF
+
+ADD cron /tmo/cron
+RUN crontab /tmp/cron
 
 WORKDIR /ska/public_html
 
