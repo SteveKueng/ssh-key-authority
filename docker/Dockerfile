@@ -64,7 +64,7 @@ RUN cat <<EOF > /etc/apache2/sites-available/000-default.conf
 </VirtualHost>
 EOF
 
-ADD cron /tmo/cron
+ADD cron /tmp/cron
 RUN crontab /tmp/cron
 
 WORKDIR /ska/public_html
