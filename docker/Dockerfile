@@ -6,8 +6,8 @@ ENV SYSTEM=https://github.com/operasoftware/ssh-key-authority.git
 ADD entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-ADD cron /etc/cron.d/ldap-sync
-RUN chmod 0644 /etc/cron.d/ldap-sync
+ADD cron /tmo/cron
+RUN crontab /tmp/cron
 
 RUN ln -s /usr/local/bin/php /usr/bin/php
 
