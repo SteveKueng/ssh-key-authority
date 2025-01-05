@@ -1,2 +1,2 @@
 0 1 * * * /ska/scripts/ldap_update.php
-*/1 * * * "/ska/scripts/syncd.php --user keys-sync"
+*/1 * * * * "/ska/scripts/syncd.php --user keys-sync"
