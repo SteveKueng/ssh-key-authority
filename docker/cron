@@ -1,2 +1,2 @@
-0 1 * * * /ska/scripts/ldap_update.php
-*/1 * * * * PID=$(cat /var/run/keys-sync.pid 2>/dev/null); [ -n "$PID" ] && [ -d "/proc/$PID" ] || /ska/scripts/syncd.php --user keys-sync
+0 * * * * /ska/scripts/ldap_update.php
+* * * * * PID=$(cat /var/run/keys-sync.pid 2>/dev/null); [ -n "$PID" ] && [ -d "/proc/$PID" ] || /ska/scripts/syncd.php --user keys-sync
