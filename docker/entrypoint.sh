@@ -11,7 +11,7 @@ service cron start
 
 # set permissions
 echo "Setting permissions..."
-chown -R key-sync /ska/config/key-sync*
+chown key-sync /ska/config/keys-sync*
 chmod 600 /ska/config/key-sync*
 
 # wait for database
