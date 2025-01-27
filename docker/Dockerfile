@@ -23,7 +23,7 @@ RUN apt-get update && \
         mbstring \
         pcntl
         
-RUN pecl install ssh2-1.1.2 && \
+RUN pecl install ssh2 && \
         docker-php-ext-enable ssh2
 
 # Verzeichnisse erstellen und Berechtigungen setzen
