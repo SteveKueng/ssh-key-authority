@@ -8,6 +8,9 @@ RUN chmod +x /entrypoint.sh
 
 RUN ln -s /usr/local/bin/php /usr/bin/php
 
+RUN echo "deb https://deb.debian.org/debian/ unstable main contrib non-free" > /etc/apt/sources.list
+RUN echo "deb-src https://deb.debian.org/debian/ unstable main contrib non-free" > /etc/apt/sources.list
+
 # Erforderliche Pakete installieren
 RUN apt-get update && \
     apt-get install -y \
