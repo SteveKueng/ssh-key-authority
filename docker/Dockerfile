@@ -8,9 +8,6 @@ RUN chmod +x /entrypoint.sh
 
 RUN ln -s /usr/local/bin/php /usr/bin/php
 
-RUN echo "deb https://deb.debian.org/debian/ unstable main contrib non-free" > /etc/apt/sources.list
-RUN echo "deb-src https://deb.debian.org/debian/ unstable main contrib non-free" > /etc/apt/sources.list
-
 # Erforderliche Pakete installieren
 RUN apt-get update && \
     apt-get install -y \
@@ -18,16 +15,31 @@ RUN apt-get update && \
         cron \
         default-libmysqlclient-dev \
         libldap2-dev \
-        libssh2-1-dev \
-        libmcrypt-dev && \
-        docker-php-ext-install \
+        libmcrypt-dev \
+        build-essential \
+        cmake \
+        libssl-dev \
+        wget
+
+# Neueste libssh2 von GitHub klonen und kompilieren
+WORKDIR /usr/local/src
+RUN git clone https://github.com/libssh2/libssh2.git && \
+    cd libssh2 && \
+    mkdir build && cd build && \
+    cmake .. && \
+    make -j$(nproc) && \
+    make install && \
+    ldconfig
+
+# PHP-SSH2 mit der neu kompilierten libssh2 installieren
+RUN docker-php-ext-install \
         ldap \
         mysqli \
         mbstring \
         pcntl
-        
-RUN pecl install ssh2 && \
-        docker-php-ext-enable ssh2
+
+RUN pecl install ssh2-1.3.1 && \
+    echo "extension=ssh2.so" > /usr/local/etc/php/conf.d/ssh2.ini
 
 # Verzeichnisse erstellen und Berechtigungen setzen
 RUN mkdir -p /var/log/keys/ /run/php/ /ska/ && \
