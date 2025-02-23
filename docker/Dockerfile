@@ -21,6 +21,10 @@ RUN apt-get update && \
         libssl-dev \
         wget
 
+# Entferne die alte libssh2-Version (falls installiert)
+RUN apt-get remove --purge -y libssh2-1 libssh2-1-dev && \
+    apt-get autoremove -y
+
 # Neueste libssh2 von GitHub klonen und kompilieren
 WORKDIR /usr/local/src
 RUN git clone https://github.com/libssh2/libssh2.git && \
@@ -31,16 +35,16 @@ RUN git clone https://github.com/libssh2/libssh2.git && \
     make install && \
     ldconfig
 
-# PHP-SSH2 mit der neu kompilierten libssh2 installieren
+# PHP-Erweiterungen installieren
 RUN docker-php-ext-install \
         ldap \
         mysqli \
         mbstring \
         pcntl
 
-
-RUN pecl install ssh2 && \
-        docker-php-ext-enable ssh2
+# PHP-SSH2 mit der neu kompilierten libssh2 installieren
+RUN pecl install ssh2-1.3.1 && \
+    echo "extension=ssh2.so" > /usr/local/etc/php/conf.d/ssh2.ini
 
 # Verzeichnisse erstellen und Berechtigungen setzen
 RUN mkdir -p /var/log/keys/ /run/php/ /ska/ && \
