@@ -264,9 +264,7 @@ function sync_server($id, $only_username = null, $preview = false) {
 	$attempts = array('keys-sync', 'root');
 	foreach($attempts as $attempt) {
 		try {
-			$connection = ssh2_connect($hostname, $server->port, [
-			    'hostkey' => ['rsa-sha2-256', 'ssh-rsa']
-			]);
+			$connection = ssh2_connect($hostname, $server->port);
 		} catch(ErrorException $e) {
 			echo date('c')." {$hostname}: Failed to connect.\n";
 			$server->sync_report('sync failure', 'SSH connection failed');
@@ -274,7 +272,7 @@ function sync_server($id, $only_username = null, $preview = false) {
 			report_all_accounts_failed($keyfiles);
 			return;
 		}
-		$fingerprint = ssh2_fingerprint($connection, SSH2_FINGERPRINT_MD5 | SSH2_FINGERPRINT_HEX);
+		$fingerprint = ssh2_fingerprint($connection, SSH2_FINGERPRINT_MD5 | SSH2_FINGERPRINT_SHA1 | SSH2_FINGERPRINT_HEX);
 		if(is_null($server->rsa_key_fingerprint)) {
 			$server->rsa_key_fingerprint = $fingerprint;
 			$server->update();
