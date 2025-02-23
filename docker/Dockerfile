@@ -21,10 +21,6 @@ RUN apt-get update && \
         libssl-dev \
         wget
 
-# Entferne die alte libssh2-Version (falls installiert)
-RUN apt-get remove --purge -y libssh2-1 libssh2-1-dev && \
-    apt-get autoremove -y
-
 # Neueste libssh2 von GitHub klonen und kompilieren
 WORKDIR /usr/local/src
 RUN git clone https://github.com/libssh2/libssh2.git && \
