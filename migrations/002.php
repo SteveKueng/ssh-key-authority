@@ -165,7 +165,7 @@ try {
 		`sync_status` enum('not synced yet', 'sync success', 'sync failure', 'sync warning') NOT NULL DEFAULT 'not synced yet',
 		`configuration_system` enum('unknown', 'cf-sysadmin', 'puppet-devops', 'puppet-miniops', 'puppet-tvstore', 'none') NOT NULL DEFAULT 'unknown',
 		`custom_keys` enum('not allowed', 'allowed') NOT NULL DEFAULT 'not allowed',
-		`rsa_key_fingerprint` char(32) DEFAULT NULL,
+		`rsa_key_fingerprint` char(45) DEFAULT NULL,
 		PRIMARY KEY (`id`),
 		UNIQUE KEY `hostname` (`hostname`),
 		KEY `ip_address` (`ip_address`)
