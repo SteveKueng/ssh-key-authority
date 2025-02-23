@@ -19,6 +19,7 @@ RUN apt-get update && \
         build-essential \
         cmake \
         libssl-dev \
+        docker-php-ext-install \
         wget
 
 # Neueste libssh2 von GitHub klonen und kompilieren
@@ -38,8 +39,10 @@ RUN docker-php-ext-install \
         mbstring \
         pcntl
 
-RUN pecl install ssh2-1.3.1 && \
-    echo "extension=ssh2.so" > /usr/local/etc/php/conf.d/ssh2.ini
+
+RUN pecl install ssh2 && \
+        docker-php-ext-enable ssh2 && \
+        echo "extension=ssh2.so" > /usr/local/etc/php/conf.d/ssh2.ini
 
 # Verzeichnisse erstellen und Berechtigungen setzen
 RUN mkdir -p /var/log/keys/ /run/php/ /ska/ && \
