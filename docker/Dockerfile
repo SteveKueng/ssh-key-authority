@@ -40,8 +40,7 @@ RUN docker-php-ext-install \
 
 
 RUN pecl install ssh2 && \
-        docker-php-ext-enable ssh2 && \
-        echo "extension=ssh2.so" > /usr/local/etc/php/conf.d/ssh2.ini
+        docker-php-ext-enable ssh2
 
 # Verzeichnisse erstellen und Berechtigungen setzen
 RUN mkdir -p /var/log/keys/ /run/php/ /ska/ && \
