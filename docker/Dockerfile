@@ -19,7 +19,6 @@ RUN apt-get update && \
         build-essential \
         cmake \
         libssl-dev \
-        docker-php-ext-install \
         wget
 
 # Neueste libssh2 von GitHub klonen und kompilieren
