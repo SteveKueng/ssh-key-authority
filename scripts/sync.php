@@ -264,7 +264,9 @@ function sync_server($id, $only_username = null, $preview = false) {
 	$attempts = array('keys-sync', 'root');
 	foreach($attempts as $attempt) {
 		try {
-			$connection = ssh2_connect($hostname, $server->port);
+			$connection = ssh2_connect($hostname, $server->port, [
+			    'hostkey' => ['rsa-sha2-256', 'ssh-rsa']
+			]);
 		} catch(ErrorException $e) {
 			echo date('c')." {$hostname}: Failed to connect.\n";
 			$server->sync_report('sync failure', 'SSH connection failed');
