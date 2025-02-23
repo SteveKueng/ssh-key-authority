@@ -1,7 +1,7 @@
 FROM php:7.2-apache
 
 # Systemvariablen setzen
-ENV SYSTEM=https://github.com/operasoftware/ssh-key-authority.git
+ENV SYSTEM=https://github.com/SteveKueng/ssh-key-authority.git
 
 ADD entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
