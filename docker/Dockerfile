@@ -16,6 +16,7 @@ RUN apt-get update && \
         default-libmysqlclient-dev \
         libldap2-dev \
         libssh2-1-dev \
+        libssh2-1 \
         libmcrypt-dev && \
         docker-php-ext-install \
         ldap \
@@ -43,6 +44,9 @@ RUN a2enmod session_cookie
 RUN a2enmod session_crypto
 RUN a2enmod auth_form
 RUN a2enmod request
+RUN a2enmod headers
+RUN a2enmod rewrite
+RUN a2enmod setenvif
 
 # Apache konfigurieren
 COPY ldap-docker.conf /etc/apache2/conf-enabled/ldap-docker.conf
