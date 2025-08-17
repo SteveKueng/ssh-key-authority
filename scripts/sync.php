@@ -272,7 +272,7 @@ function sync_server($id, $only_username = null, $preview = false) {
 			report_all_accounts_failed($keyfiles);
 			return;
 		}
-		$fingerprint = ssh2_fingerprint($connection, SSH2_FINGERPRINT_MD5 | SSH2_FINGERPRINT_HEX);
+		$fingerprint = ssh2_fingerprint($connection, SSH2_FINGERPRINT_MD5 | SSH2_FINGERPRINT_SHA1 | SSH2_FINGERPRINT_HEX);
 		if(is_null($server->rsa_key_fingerprint)) {
 			$server->rsa_key_fingerprint = $fingerprint;
 			$server->update();

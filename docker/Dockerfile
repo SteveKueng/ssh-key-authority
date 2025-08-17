@@ -1,7 +1,7 @@
 FROM php:7.2-apache
 
 # Systemvariablen setzen
-ENV SYSTEM=https://github.com/operasoftware/ssh-key-authority.git
+ENV SYSTEM=https://github.com/SteveKueng/ssh-key-authority.git
 
 ADD entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
@@ -15,17 +15,32 @@ RUN apt-get update && \
         cron \
         default-libmysqlclient-dev \
         libldap2-dev \
-        libssh2-1-dev \
-        libssh2-1 \
-        libmcrypt-dev && \
-        docker-php-ext-install \
+        libmcrypt-dev \
+        build-essential \
+        cmake \
+        libssl-dev \
+        wget
+
+# Neueste libssh2 von GitHub klonen und kompilieren
+WORKDIR /usr/local/src
+RUN git clone https://github.com/libssh2/libssh2.git && \
+    cd libssh2 && \
+    mkdir build && cd build && \
+    cmake .. && \
+    make -j$(nproc) && \
+    make install && \
+    ldconfig
+
+# PHP-Erweiterungen installieren
+RUN docker-php-ext-install \
         ldap \
         mysqli \
         mbstring \
         pcntl
-        
-RUN pecl install ssh2 && \
-        docker-php-ext-enable ssh2
+
+# PHP-SSH2 mit der neu kompilierten libssh2 installieren
+RUN pecl install ssh2-1.3.1 && \
+    echo "extension=ssh2.so" > /usr/local/etc/php/conf.d/ssh2.ini
 
 # Verzeichnisse erstellen und Berechtigungen setzen
 RUN mkdir -p /var/log/keys/ /run/php/ /ska/ && \
