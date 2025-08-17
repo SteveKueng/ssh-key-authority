@@ -76,22 +76,22 @@ RUN a2enmod authnz_ldap \
 # Apache conf from build context
 COPY ldap-docker.conf /etc/apache2/conf-enabled/ldap-docker.conf
 
-# Configure default vhost
-RUN bash -lc 'cat > /etc/apache2/sites-available/000-default.conf << "EOF"\n\
-<VirtualHost *:80>\n\
-    DocumentRoot /ska/public_html\n\
-    DirectoryIndex init.php\n\
-    FallbackResource /init.php\n\
-\n\
-    <Directory /ska/public_html>\n\
-        AuthType Basic\n\
-        AuthName "SSH Key Authority"\n\
-        AuthBasicProvider docker\n\
-        AuthUserFile /dev/null\n\
-        Require valid-user\n\
-    </Directory>\n\
-</VirtualHost>\n\
-EOF'
+# Configure default vhost (sauberer Heredoc, nichts escapen)
+RUN cat >/etc/apache2/sites-available/000-default.conf <<'APACHECONF'
+<VirtualHost *:80>
+    DocumentRoot /ska/public_html
+    DirectoryIndex init.php
+    FallbackResource /init.php
+
+    <Directory /ska/public_html>
+        AuthType Basic
+        AuthName "SSH Key Authority"
+        AuthBasicProvider docker
+        AuthUserFile /dev/null
+        Require valid-user
+    </Directory>
+</VirtualHost>
+APACHECONF
 
 # Install crontab
 ADD cron /tmp/cron
