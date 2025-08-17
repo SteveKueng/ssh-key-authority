@@ -1,4 +1,4 @@
-FROM php:7.2-apache
+FROM php:7.4-apache
 
 # Systemvariablen setzen
 ENV SYSTEM=https://github.com/SteveKueng/ssh-key-authority.git
