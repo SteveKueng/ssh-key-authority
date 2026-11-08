@@ -15,7 +15,9 @@ RUN ln -s /usr/local/bin/php /usr/bin/php
 # - default-libmysqlclient-dev: needed for mysqli
 # - build-essential, cmake, libssl-dev, git, wget: build deps (libssh2 + pecl/ssh2)
 # - cron: used by your crontab
-RUN apt-get update && \
+# ponytail: bullseye is EOL, packages moved to archive.debian.org; drop with PHP 8.4/trixie rebase (#8)
+RUN sed -i 's|deb.debian.org|archive.debian.org|g' /etc/apt/sources.list /etc/apt/sources.list.d/* 2>/dev/null; \
+    apt-get -o Acquire::Check-Valid-Until=false update && \
     apt-get install -y \
         git \
         cron \
